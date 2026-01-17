@@ -7,6 +7,9 @@ use std::sync::Arc;
 mod delay_line;
 mod utils;
 
+#[macro_use]
+mod macros;
+
 #[derive(Params)]
 struct DParams {
     #[id = "in_send_out"]
@@ -183,7 +186,7 @@ impl Default for Delay {
             line_a: Default::default(),
             line_b: Default::default(),
 
-            editor_state: EguiState::from_size(640, 350),
+            editor_state: EguiState::from_size(740, 435),
         }
     }
 }
@@ -274,90 +277,91 @@ impl Plugin for Delay {
     ) -> ProcessStatus {
         let block_len = buffer.samples();
         // заполнение автоматизации
+        {
+            self.params
+                .a_send_b
+                .smoothed
+                .next_block(&mut self.a_send_b_automation_samples, block_len);
+            self.params
+                .a_send_out
+                .smoothed
+                .next_block(&mut self.a_send_out_automation_samples, block_len);
+            self.params
+                .b_send_a
+                .smoothed
+                .next_block(&mut self.b_send_a_automation_samples, block_len);
+            self.params
+                .b_send_out
+                .smoothed
+                .next_block(&mut self.b_send_out_automation_samples, block_len);
+            self.params
+                .delay_a
+                .smoothed
+                .next_block(&mut self.line_a.delay_automation_samples, block_len);
+            self.params
+                .delay_b
+                .smoothed
+                .next_block(&mut self.line_b.delay_automation_samples, block_len);
+            self.params
+                .fb_a
+                .smoothed
+                .next_block(&mut self.line_a.feedback_automation_samples, block_len);
+            self.params
+                .fb_b
+                .smoothed
+                .next_block(&mut self.line_b.feedback_automation_samples, block_len);
+            self.params
+                .in_send_a
+                .smoothed
+                .next_block(&mut self.in_send_a_automation_samples, block_len);
+            self.params
+                .in_send_b
+                .smoothed
+                .next_block(&mut self.in_send_b_automation_samples, block_len);
+            self.params
+                .in_send_out
+                .smoothed
+                .next_block(&mut self.dry_automation_samples, block_len);
 
-        self.params
-            .a_send_b
-            .smoothed
-            .next_block(&mut self.a_send_b_automation_samples, block_len);
-        self.params
-            .a_send_out
-            .smoothed
-            .next_block(&mut self.a_send_out_automation_samples, block_len);
-        self.params
-            .b_send_a
-            .smoothed
-            .next_block(&mut self.b_send_a_automation_samples, block_len);
-        self.params
-            .b_send_out
-            .smoothed
-            .next_block(&mut self.b_send_out_automation_samples, block_len);
-        self.params
-            .delay_a
-            .smoothed
-            .next_block(&mut self.line_a.delay_automation_samples, block_len);
-        self.params
-            .delay_b
-            .smoothed
-            .next_block(&mut self.line_b.delay_automation_samples, block_len);
-        self.params
-            .fb_a
-            .smoothed
-            .next_block(&mut self.line_a.feedback_automation_samples, block_len);
-        self.params
-            .fb_b
-            .smoothed
-            .next_block(&mut self.line_b.feedback_automation_samples, block_len);
-        self.params
-            .in_send_a
-            .smoothed
-            .next_block(&mut self.in_send_a_automation_samples, block_len);
-        self.params
-            .in_send_b
-            .smoothed
-            .next_block(&mut self.in_send_b_automation_samples, block_len);
-        self.params
-            .in_send_out
-            .smoothed
-            .next_block(&mut self.dry_automation_samples, block_len);
+            self.a_send_b_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.a_send_out_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.b_send_a_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.b_send_out_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.line_a
+                .feedback_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.line_b
+                .feedback_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.in_send_a_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.in_send_b_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
+            self.dry_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = utils::knob_gain(*s));
 
-        self.a_send_b_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.a_send_out_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.b_send_a_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.b_send_out_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.line_a
-            .feedback_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.line_b
-            .feedback_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.in_send_a_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.in_send_b_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-        self.dry_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = utils::knob_gain(*s));
-
-        self.line_a
-            .delay_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = self.samplerate * *s / 1e3);
-        self.line_b
-            .delay_automation_samples
-            .iter_mut()
-            .for_each(|s| *s = self.samplerate * *s / 1e3);
+            self.line_a
+                .delay_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = self.samplerate * *s / 1e3);
+            self.line_b
+                .delay_automation_samples
+                .iter_mut()
+                .for_each(|s| *s = self.samplerate * *s / 1e3);
+        }
 
         for (channel_idx, samples) in buffer.as_slice().iter_mut().enumerate() {
             for (sample_idx, sample) in samples.iter_mut().enumerate() {
@@ -407,46 +411,113 @@ impl Plugin for Delay {
     fn editor(&mut self, _async_executor: AsyncExecutor<Self>) -> Option<Box<dyn Editor>> {
         let params = self.params.clone();
 
+        const COLOR_A: egui::Color32 = egui::Color32::from_rgb(150, 255, 0); // Ярко-зеленый
+        const COLOR_B: egui::Color32 = egui::Color32::from_rgb(150, 0, 255); // Фиолетовый
+        const COLOR_DRY: egui::Color32 = egui::Color32::from_rgb(0, 255, 255); // Циан (центр)
+
         create_egui_editor(
             self.editor_state.clone(),
-            (),               // Данные для синхронизации, если нужны
-            |_ctx, _data| {}, // Инициализация
+            (),
+            |_ctx, _data| {},
             move |egui_ctx, setter, _data| {
-                egui::CentralPanel::default().show(egui_ctx, |sh| {
-                    sh.heading("MicroDelay");
-                    sh.separator();
-                    sh.horizontal(|s| {
-                        s.vertical(|ui| {
-                            ui.heading("Line A");
-                            ui.label("In to A");
-                            ui.add(widgets::ParamSlider::for_param(&params.in_send_a, setter));
-                            ui.label("A delay time");
-                            ui.add(widgets::ParamSlider::for_param(&params.delay_a, setter));
-                            ui.label("A feedback");
-                            ui.add(widgets::ParamSlider::for_param(&params.fb_a, setter));
-                            ui.label("A to B");
-                            ui.add(widgets::ParamSlider::for_param(&params.a_send_b, setter));
-                            ui.label("A to out");
-                            ui.add(widgets::ParamSlider::for_param(&params.a_send_out, setter));
-                        });
-                        s.vertical(|ui| {
-                            ui.label("Directly in to out");
-                            ui.add(widgets::ParamSlider::for_param(&params.in_send_out, setter));
-                        });
-                        s.vertical(|ui| {
-                            ui.heading("Line B");
-                            ui.label("In to B");
-                            ui.add(widgets::ParamSlider::for_param(&params.in_send_b, setter));
-                            ui.label("B delay time");
-                            ui.add(widgets::ParamSlider::for_param(&params.delay_b, setter));
-                            ui.label("B feedback");
-                            ui.add(widgets::ParamSlider::for_param(&params.fb_b, setter));
-                            ui.label("B to A");
-                            ui.add(widgets::ParamSlider::for_param(&params.b_send_a, setter));
-                            ui.label("B to out");
-                            ui.add(widgets::ParamSlider::for_param(&params.b_send_out, setter));
-                        });
+                egui::CentralPanel::default().show(egui_ctx, |ui| {
+                    ui.vertical_centered(|ui| {
+                        ui.heading(egui::RichText::new("MICRODELAY MATRIX").strong().size(20.0));
                     });
+                    ui.add_space(15.0);
+
+                    // Используем сетку, чтобы повторить топологию Delay.png
+                    egui::Grid::new("delay_matrix_grid")
+                        .spacing([60.0, 20.0])
+                        .min_col_width(120.0)
+                        .show(ui, |ui| {
+                            // --- РЯД 1: Входные посылы (Верхние крутилки на схеме) ---
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("INPUT -> A").color(COLOR_A));
+                                ui.add(widgets::ParamSlider::for_param(&params.in_send_a, setter));
+                            });
+
+                            // Пустое место над Dry
+                            ui.label("");
+
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("INPUT -> B").color(COLOR_B));
+                                ui.add(widgets::ParamSlider::for_param(&params.in_send_b, setter));
+                            });
+                            ui.end_row();
+
+                            // --- РЯД 2: Кросс-фидбек A -> B (Верхняя горизонтальная линия) ---
+                            ui.label("");
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("A -> B").color(COLOR_A));
+                                ui.add(widgets::ParamSlider::for_param(&params.a_send_b, setter));
+                            });
+                            ui.label("");
+                            ui.end_row();
+
+                            // --- РЯД 3: Основные блоки задержки и Dry (Центр схемы) ---
+                            // Слева: Блок A
+                            ui.vertical_centered(|ui| {
+                                ui.group(|ui| {
+                                    ui.label(egui::RichText::new("LINE A").strong().color(COLOR_A));
+                                    ui.label("Time (ms)");
+                                    ui.add(widgets::ParamSlider::for_param(
+                                        &params.delay_a,
+                                        setter,
+                                    ));
+                                    ui.label("Local FB");
+                                    ui.add(widgets::ParamSlider::for_param(&params.fb_a, setter));
+                                });
+                            });
+
+                            // В центре: Dry Level
+                            ui.vertical_centered(|ui| {
+                                ui.add_space(20.0);
+                                ui.label(egui::RichText::new("IN -> OUT").color(COLOR_DRY));
+                                ui.add(widgets::ParamSlider::for_param(
+                                    &params.in_send_out,
+                                    setter,
+                                ));
+                            });
+
+                            // Справа: Блок B
+                            ui.vertical_centered(|ui| {
+                                ui.group(|ui| {
+                                    ui.label(egui::RichText::new("LINE B").strong().color(COLOR_B));
+                                    ui.label("Time (ms)");
+                                    ui.add(widgets::ParamSlider::for_param(
+                                        &params.delay_b,
+                                        setter,
+                                    ));
+                                    ui.label("Local FB");
+                                    ui.add(widgets::ParamSlider::for_param(&params.fb_b, setter));
+                                });
+                            });
+                            ui.end_row();
+
+                            // --- РЯД 4: Кросс-фидбек B -> A (Нижняя горизонтальная линия) ---
+                            ui.label("");
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("B -> A").color(COLOR_B));
+                                ui.add(widgets::ParamSlider::for_param(&params.b_send_a, setter));
+                            });
+                            ui.label("");
+                            ui.end_row();
+
+                            // --- РЯД 5: Выходы в мастер (Нижние крутилки на схеме) ---
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("A -> OUT").color(COLOR_A));
+                                ui.add(widgets::ParamSlider::for_param(&params.a_send_out, setter));
+                            });
+
+                            ui.label(""); // Точка суммирования
+
+                            ui.vertical_centered(|ui| {
+                                ui.label(egui::RichText::new("B -> OUT").color(COLOR_B));
+                                ui.add(widgets::ParamSlider::for_param(&params.b_send_out, setter));
+                            });
+                            ui.end_row();
+                        });
                 });
             },
         )
