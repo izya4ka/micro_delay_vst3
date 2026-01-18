@@ -7,9 +7,6 @@ use std::sync::Arc;
 mod delay_line;
 mod utils;
 
-#[macro_use]
-mod macros;
-
 #[derive(Params)]
 struct DParams {
     #[id = "in_send_out"]
