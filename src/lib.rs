@@ -43,86 +43,86 @@ impl Default for DParams {
         Self {
             in_send_out: FloatParam::new(
                 "Dry Level",
-                1.0,
+                100.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             in_send_a: FloatParam::new(
                 "Input to A",
-                1.0,
+                100.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             in_send_b: FloatParam::new(
                 "Input to B",
-                1.0,
+                100.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             a_send_out: FloatParam::new(
                 "A to out",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             b_send_out: FloatParam::new(
                 "B to out",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             a_send_b: FloatParam::new(
                 "A to B",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             b_send_a: FloatParam::new(
                 "B to A",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
 
             fb_a: FloatParam::new(
                 "Feedback A",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
             fb_b: FloatParam::new(
                 "Feedback B",
                 0.0,
                 FloatRange::Linear {
-                    min: -1.0,
-                    max: 1.0,
+                    min: -100.0,
+                    max: 100.0,
                 },
             )
-            .with_value_to_string(Arc::new(|s| format!("{:.2}%", 100.0 * s))),
+            .with_value_to_string(Arc::new(|s| format!("{:.2}%", s))),
 
             delay_a: FloatParam::new(
                 "Delay A",

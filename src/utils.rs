@@ -10,7 +10,7 @@ pub fn db_to_gain(db: f32) -> f32 {
 
 #[inline]
 pub fn knob_gain(knob_val: f32) -> f32 {
-    knob_val.signum() * db_to_gain(80.0 * (knob_val.abs() - 1.0))
+    knob_val/100.0
 }
 
 
