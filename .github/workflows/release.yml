@@ -18,11 +18,8 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - name: Build xtask
-        run: cargo build --release --bin xtask
-
       - name: Build VST3 bundle for Linux
-        run: cargo xtask bundle microdelay --release
+        run: cargo run --package xtask --release bundle microdelay
       
       - uses: softprops/action-gh-release@v2
         with:
@@ -36,16 +33,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Rust (MSVC)
+      - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Build xtask
-        run: cargo build --release --bin xtask
-
-      - name: Build VST3 bundle for Windows
-        run: cargo xtask bundle microdelay --release
+      - name: Build VST3 for Windows
+        run: cargo run --package xtask --release bundle microdelay
       
       - uses: softprops/action-gh-release@v2
         with:
           files:
-            ./target/bundled/microdelay.vst3/Contents/x86_64-windows/microdelay.dll
+            ./target/bundled/microdelay.vst3/Contents/x86_64-windows-msvc/microdelay.dll
