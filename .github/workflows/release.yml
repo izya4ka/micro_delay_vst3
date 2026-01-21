@@ -31,15 +31,21 @@ jobs:
             libxcursor-dev \
             libxrandr-dev \
             libxinerama-dev \
-            libxi-dev
+            libxi-dev \
+            zip
 
-      - name: Build VST3 bundle for Linux
+      - name: Build VST3 bundle
         run: cargo run --package xtask --release bundle microdelay
       
+      - name: Pack VST3 bundle into ZIP
+        run: |
+          cd target/bundled
+          zip -r microdelay-linux-x64.vst3.zip microdelay.vst3
+
       - uses: softprops/action-gh-release@v2
         with:
           files:
-            ./target/bundled/microdelay.vst3/Contents/x86_64-linux/microdelay.so
+            ./target/bundled/microdelay-linux-x64.vst3.zip
 
   build-windows:
     name: Build for Windows (MSVC)
@@ -51,10 +57,10 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@nightly
 
-      - name: Build VST3 for Windows
+      - name: Build VST3 bundle
         run: cargo run --package xtask --release bundle microdelay
       
-      - name: Create ZIP for Windows VST3
+      - name: Pack VST3 bundle into ZIP
         run: |
           Compress-Archive -Path target/bundled/microdelay.vst3 -DestinationPath microdelay-windows-x64.vst3.zip
 
